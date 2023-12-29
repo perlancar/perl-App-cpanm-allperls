@@ -1,0 +1,54 @@
+#!perl
+
+# FRAGMENT id=shcompgen-hint command=_cpanm-allperls
+
+use strict;
+use warnings;
+#use Log::ger::Screen;
+
+use File::Which qw(which);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
+
+unless (@ARGV) {
+    die "Usage: cpanm-allperls [CPANM-ARGUMENTS] ...\n";
+}
+
+unless (which "perlbrew") {
+    die "cpanm-allperls: perlbrew not available, bailing out\n";
+}
+
+my @perls;
+for (`perlbrew list`) {
+    /^(\* |  )(.+?)\s*$/ or do { warn "cpanm-allperls: Unknown line in `perlbrew list` output: $_, skipping this perl\n"; next };
+    push @perls, $2;
+}
+
+my $i = 0;
+for my $perl (@perls) {
+    $i++;
+    my @cmd = ("perlbrew", "exec", "--with", $perl, "cpanm", @ARGV);
+    printf "[cpanm-allperls] [#%d/%d] Executing %s ...\n", $i, scalar(@perls), join(" ", @cmd);
+    system @cmd;
+}
+
+# ABSTRACT: Install modules with all perls available
+# PODNAME:
+
+=head1 DESCRIPTION
+
+Use like you would use L<cpanm>:
+
+ % cpanm-allperls -n Some::Module
+
+
+=head1 SEE ALSO
+
+L<perlbrew> from L<App::perlbrew>
+
+L<cpanm> from L<App::cpanminus>
+
+=cut

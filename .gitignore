@@ -1,0 +1,5 @@
+App-cpanm-allperls-*
+.build
+*~
+nytprof*
+.DS_Store
